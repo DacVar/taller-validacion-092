@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Taller 4 · Conducir sin ayudar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: cuaderno de observación — una columna de lectura con índice fijo a la izquierda en pantallas anchas; las "hojas" se ven como fichas de papel cuadriculado */
+:root{
+  --bg:#f3f5f7; --paper:#ffffff; --ink:#18222d; --muted:#5b6876; --line:#d5dce3;
+  --accent:#0f6b6b; --accent-soft:#e0f0ef; --mark:#f2c94c; --mark-soft:#fdf3d2; --warn:#a33a2b; --warn-soft:#f8e4e0; --ok:#2f7a3d; --ok-soft:#e2f2e4;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11171d; --paper:#18212a; --ink:#e5ebf0; --muted:#9aa8b5; --line:#2c3a46;
+  --accent:#5cc4bf; --accent-soft:#163130; --mark:#e6be4a; --mark-soft:#3a3218; --warn:#f08a78; --warn-soft:#3b211d; --ok:#7fcf8c; --ok-soft:#1b3220; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11171d; --paper:#18212a; --ink:#e5ebf0; --muted:#9aa8b5; --line:#2c3a46;
+  --accent:#5cc4bf; --accent-soft:#163130; --mark:#e6be4a; --mark-soft:#3a3218; --warn:#f08a78; --warn-soft:#3b211d; --ok:#7fcf8c; --ok-soft:#1b3220; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:230px minmax(0,1fr);gap:48px}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr);gap:0}.toc{display:none}}
+main{min-width:0;max-width:720px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.65rem;font-weight:800;margin-top:8px}
+h3{font-size:1.15rem;font-weight:600;margin-top:28px}
+p,ul,ol{margin:12px 0}
+li{margin:4px 0}
+a{color:var(--accent)}
+strong{font-weight:700}
+em{font-style:italic}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+hr{border:0;border-top:1px solid var(--line);margin:40px 0}
+
+/* encabezado */
+header.hero{padding-block:40px 24px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.hero .lead{font-size:1.15rem;color:var(--muted);max-width:60ch}
+.tally{font-family:var(--f-mono);display:flex;flex-wrap:wrap;gap:24px;margin-top:20px;font-size:.95rem}
+.tally div{display:flex;flex-direction:column;gap:2px}
+.tally b{font-size:1.4rem;letter-spacing:.15em}
+.tally .real b{background:linear-gradient(transparent 55%,var(--mark-soft) 55%)}
+
+/* índice */
+.toc{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;padding-top:40px;font-size:.92rem}
+.toc ol{list-style:none;padding:0;margin:12px 0;display:flex;flex-direction:column;gap:2px}
+.toc a{display:flex;gap:10px;align-items:center;text-decoration:none;color:var(--ink);padding:6px 8px;border-radius:6px}
+.toc a:hover{background:var(--accent-soft)}
+.toc .dot{width:14px;height:14px;border:2px solid var(--line);border-radius:50%;flex:none}
+.toc a.done .dot{background:var(--accent);border-color:var(--accent)}
+.toc small{color:var(--muted);font-family:var(--f-mono);font-size:.72rem}
+
+/* secciones */
+section.paso{padding-top:40px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{font-family:var(--f-mono);font-size:.75rem;padding:3px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.chip.pair{background:var(--mark-soft);color:var(--ink)}
+.done-row{margin-top:24px;display:flex;align-items:center;gap:10px;font-size:.95rem;color:var(--muted)}
+.done-row input{width:20px;height:20px;accent-color:var(--accent)}
+
+blockquote{margin:16px 0;padding:4px 0 4px 18px;border-left:3px solid var(--accent);color:var(--ink);font-style:italic}
+.box{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:18px 0}
+.box.task{border-color:var(--mark);background:var(--mark-soft)}
+.box.task h3{margin-top:0}
+.box.warn{border-color:var(--warn);background:var(--warn-soft)}
+.label{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
+
+.tbl{overflow-x:auto;margin:16px 0}
+table{border-collapse:collapse;width:100%;font-size:.95rem;background:var(--paper)}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{font-family:var(--f-mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+td.code{font-family:var(--f-mono);font-weight:600;font-size:1.1rem;color:var(--accent);text-align:center;width:56px}
+
+/* ejercicios */
+.quiz{display:flex;flex-direction:column;gap:10px;margin:16px 0;padding:0;list-style:none}
+.quiz li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.quiz li .ctx{display:block;color:var(--muted);font-size:.88rem}
+.quiz select{font-family:var(--f-mono);font-size:.95rem;padding:6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.quiz .ans{grid-column:1/-1;font-size:.93rem;border-top:1px dashed var(--line);padding-top:8px}
+.btn{font-family:var(--f-body);font-weight:700;font-size:.95rem;padding:9px 16px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--paper);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.num{width:72px;font-family:var(--f-mono);font-size:1rem;padding:6px 8px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+
+details{background:var(--paper);border:1px solid var(--line);border-radius:10px;margin:14px 0}
+details>summary{cursor:pointer;padding:12px 16px;font-weight:700;list-style:none}
+details>summary::before{content:"▸ ";color:var(--accent)}
+details[open]>summary::before{content:"▾ "}
+details>.inner{padding:0 18px 14px}
+
+/* transcripción */
+.script{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 0;margin:14px 0;font-size:.95rem}
+.script p{margin:0;padding:6px 16px 6px 56px;position:relative}
+.script p::before{content:attr(data-n);position:absolute;left:16px;font-family:var(--f-mono);font-size:.78rem;color:var(--muted);top:8px}
+.script .u{color:var(--muted)}
+.script .c b{color:var(--accent)}
+.script .act{font-style:italic;color:var(--muted)}
+
+/* hojas */
+.sheet{position:relative;background:var(--paper);background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 26px;border:1px solid var(--line);border-radius:10px;margin:14px 0;overflow:hidden}
+.sheet pre{margin:0;padding:16px 18px;font-family:var(--f-mono);font-size:.82rem;line-height:26px;overflow-x:auto;white-space:pre;background:transparent;color:var(--ink)}
+.sheet .copy{position:absolute;top:10px;right:10px;font-size:.8rem;padding:5px 10px}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:14px 0}
+.card{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:.95rem}
+.card h4{font-family:var(--f-display);margin:0 0 6px;font-size:1.05rem}
+.card .why{color:var(--muted);font-size:.88rem;margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+
+.refs{font-size:.88rem;color:var(--muted)}
+.refs li{margin:6px 0}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<nav class="toc" aria-label="Índice del taller">
+  <span class="eyebrow">Su avance</span>
+  <ol id="toc">
+    <li><a href="#inicio"><span class="dot"></span><span>Cómo usar el taller</span></a></li>
+    <li><a href="#paso0" data-step="paso0"><span class="dot"></span><span>0 · Antes de empezar <small>10 min</small></span></a></li>
+    <li><a href="#paso1" data-step="paso1"><span class="dot"></span><span>1 · Pensar en voz alta <small>15 min</small></span></a></li>
+    <li><a href="#paso2" data-step="paso2"><span class="dot"></span><span>2 · Qué cuenta como intervención <small>25 min</small></span></a></li>
+    <li><a href="#paso3" data-step="paso3"><span class="dot"></span><span>3 · Qué decir en vez de ayudar <small>15 min</small></span></a></li>
+    <li><a href="#paso4" data-step="paso4"><span class="dot"></span><span>4 · La misma tarea, dos veces <small>15 min</small></span></a></li>
+    <li><a href="#paso5" data-step="paso5"><span class="dot"></span><span>5 · Ensayo en pareja <small>50 min</small></span></a></li>
+    <li><a href="#paso6" data-step="paso6"><span class="dot"></span><span>6 · Su primera sesión real <small>esta semana</small></span></a></li>
+    <li><a href="#entrega" data-step="entrega"><span class="dot"></span><span>Entrega</span></a></li>
+    <li><a href="#hojas"><span class="dot"></span><span>Hojas y tarjetas</span></a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="hero" id="inicio">
+  <span class="eyebrow">Módulo 092 · Técnicas de validación · Fase 2 · Taller asíncrono de la Sesión 4</span>
+  <h1>Conducir sin ayudar</h1>
+  <p class="lead">Qué decirle a su usuario cuando se atasca, qué cuenta como ayuda y cómo va a contarla su pareja. Este taller reemplaza la clase del sábado 3 de octubre.</p>
+  <div class="tally" aria-hidden="true">
+    <div><span class="eyebrow">Creía</span><b>||</b></div>
+    <div class="real"><span class="eyebrow">Real</span><b>||||| |</b></div>
+  </div>
+</header>
+
+<section>
+  <h2>Cómo usar este taller</h2>
+  <p>En la Fase 1 dejaron listo el plan de validación: tareas, predicciones, criterios, apertura y prototipo. Esta semana cada pareja hace <strong>su primera sesión con un usuario real</strong>. Este taller los prepara para lo único que no se puede dejar escrito: lo que ustedes van a hacer cuando el usuario se quede quieto frente a la pantalla que diseñaron.</p>
+  <p>El syllabus lo llama el punto crítico central del módulo:</p>
+  <blockquote>"El impulso de ayudar es inmediato y se experimenta como cortesía. Cada intervención resuelve el momento y elimina el dato: el punto donde el usuario se detuvo era el hallazgo."</blockquote>
+  <p>Y agrega algo que van a comprobar en el paso 5: <em>"En la primera sesión el número es alto y el estudiante no lo advierte mientras ocurre."</em> Eso no se corrige leyendo. Se corrige contando.</p>
+  <div class="box">
+    <span class="label">Cómo está organizado</span>
+    <ul>
+      <li><strong>Pasos 1 a 4:</strong> lectura y ejercicios cortos. Cada uno los hace por su cuenta, a su ritmo (unos 70 minutos). El ejercicio del paso 2 se compara con la pareja.</li>
+      <li><strong>Paso 5:</strong> ensayo en pareja, en vivo, por videollamada o en persona (unos 50 minutos).</li>
+      <li><strong>Paso 6:</strong> la primera sesión real, después de terminar el taller.</li>
+      <li><strong>Entrega:</strong> un solo texto por pareja, con una plantilla para copiar al final.</li>
+    </ul>
+    <p>En los ejercicios, <strong>escriban su respuesta antes de abrir la solución</strong>. Si la abren primero, se pierde lo que el ejercicio enseña. Marquen cada paso como hecho al final de su sección: el índice guarda su avance en este navegador.</p>
+  </div>
+  <p>Como siempre, todos los ejemplos son de la <strong>app del tendero</strong>. Trasladarlos a su prototipo es parte del trabajo de ustedes.</p>
+</section>
+
+<section class="paso" id="paso0">
+  <span class="eyebrow">Paso 0 · en pareja · 10 min</span>
+  <h2>Antes de empezar: ¿está todo listo para la sesión real?</h2>
+  <p>Revisen esto juntos. Lo que no esté, lo resuelven antes de seguir.</p>
+  <ul>
+    <li><strong>Usuario con fecha</strong>, que no sea del programa, para una sesión <strong>después</strong> de terminar este taller. Decidan quién conduce esa primera sesión y quién observa.</li>
+    <li><strong>El prototipo abierto desde el enlace que le van a mandar al usuario</strong>, no desde el editor de Figma. ¿Abre en la pantalla principal? ¿El panel con la lista de pantallas o flujos queda oculto? ¿Las zonas clicables (<em>hotspot hints</em>) están apagadas?</li>
+    <li><strong>La parte 6 de su apertura</strong>, que cambia. Lean el aviso de abajo.</li>
+  </ul>
+  <div class="box warn">
+    <span class="label">Cambio: las sesiones no se graban</span>
+    <p>En este curso las sesiones de la Fase 2 <strong>no se graban</strong>. El registro de la sesión es lo que escribe quien observa, en vivo. Por eso la hoja del observador (paso 2 y anexos) es tan importante: <strong>si no se anotó, no pasó.</strong></p>
+    <p>Reescriban la parte 6 de su apertura. En vez de pedir permiso para grabar, algo como:</p>
+    <blockquote>"No vamos a grabar. Mi compañero va a tomar notas de lo que pasa en la pantalla; esas notas las comentamos en una clase, sin tu nombre. Si en algún momento quieres parar, paramos."</blockquote>
+    <p>Si ya le habían dicho a su usuario que lo iban a grabar, avísenle del cambio.</p>
+  </div>
+  <label class="done-row"><input type="checkbox" data-done="paso0" id="done-paso0"> Hecho: tenemos usuario con fecha, prototipo revisado y la parte 6 reescrita.</label>
+</section>
+
+<section class="paso" id="paso1">
+  <span class="eyebrow">Paso 1 · individual · 15 min</span>
+  <h2>Pensar en voz alta: ven dónde se detiene, no por qué</h2>
+  <p>En la apertura que escribieron hay una línea que dice <em>"dime en voz alta lo que vas pensando"</em>. Es la herramienta principal de la Fase 2 y se llama <strong>pensar en voz alta</strong> (<em>think-aloud</em>).</p>
+  <p>Viene de la psicología cognitiva. Ericsson y Simon, en <em>Protocol Analysis</em> (1984, revisado en 1993), mostraron que si a una persona se le pide <strong>decir lo que piensa mientras hace algo</strong>, sin explicarlo ni justificarlo, lo que dice es un dato bastante fiel de lo que pasa en su cabeza. Jakob Nielsen la llamó en 2012 "la herramienta de usabilidad número uno": es barata, se aprende rápido y funciona con pocas personas.</p>
+  <p>¿Para qué la necesitan? Al observar, ustedes ven <strong>dónde</strong> se detiene el usuario. No ven <strong>por qué</strong>. El usuario del tendero, con la tarea de la devolución, toca <em>Vender</em> en vez de <em>Historial</em>. Puede ser por tres razones, y cada una es un problema de diseño distinto:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Lo que dice mientras lo hace</th><th>Qué problema es</th></tr></thead>
+    <tbody>
+      <tr><td><em>"¿Dónde está lo de devolver? No veo nada..."</em></td><td>No lo <strong>ve</strong>: visibilidad</td></tr>
+      <tr><td><em>"Historial... no, eso es para ver cosas viejas."</em></td><td>Lo ve y <strong>no lo asocia</strong>: nombre</td></tr>
+      <tr><td><em>"Pues lo vendo al revés, ¿no?"</em></td><td>Tiene otra idea del proceso: <strong>modelo mental</strong></td></tr>
+    </tbody>
+  </table></div>
+  <p>En el recorrido cognitivo de la Sesión 3, ustedes adivinaban la respuesta a "¿lo va a ver? ¿lo va a asociar?". Con el pensar en voz alta, <strong>el usuario les da la respuesta de verdad</strong>.</p>
+
+  <h3>Tres reglas para quien conduce</h3>
+  <ol>
+    <li><strong>Se pregunta qué piensa, nunca por qué.</strong> <em>"¿Qué estás pensando?"</em> o <em>"¿qué buscas?"</em>, sí. <em>"¿Por qué tocaste ahí?"</em>, no. El "por qué" obliga a justificarse, y quien se justifica inventa una razón lógica que no es la que tenía. Además suena a que se equivocó.</li>
+    <li><strong>El silencio largo se rompe con un recordatorio neutro, no con ayuda.</strong> La gente se calla justo cuando se concentra, que es cuando está atascada. Ahí no se dice <em>"¿te ayudo?"</em>; se dice <em>"¿qué estás pensando?"</em> y nada más.</li>
+    <li><strong>El "ajá" se vale, pero parejo.</strong> Boren y Ramey (2000) mostraron que un silencio total es raro para quien habla: se siente solo y se calla. Recomiendan esos sonidos cortos de "te estoy escuchando": <em>"ajá"</em>, <em>"mm-hm"</em>. Pero solo si suenan <strong>igual cuando el usuario acierta y cuando se equivoca</strong>. Un "ajá" que solo sale cuando toca el botón correcto se volvió un "eso es", y el usuario lo aprende en dos minutos.</li>
+  </ol>
+
+  <div class="box task">
+    <h3>Ejercicio 1</h3>
+    <p>El usuario del tendero lleva veinte segundos callado mirando la pantalla principal. Escriban <strong>exactamente</strong> lo que le dirían, como les salga natural. No lo corrijan. Lo van a revisar en el paso 2.</p>
+    <label for="ex1" class="label">Lo que le diría</label>
+    <textarea id="ex1" rows="2" style="width:100%;font:inherit;padding:8px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink)"></textarea>
+  </div>
+  <label class="done-row"><input type="checkbox" data-done="paso1" id="done-paso1"> Hecho: leí el paso 1 y escribí mi frase.</label>
+</section>
+
+<section class="paso" id="paso2">
+  <span class="eyebrow">Paso 2 · individual + comparar en pareja · 25 min</span>
+  <h2>Qué cuenta como intervención</h2>
+  <p>En cada sesión de la Fase 2, quien observa va a <strong>contar las intervenciones</strong> de quien conduce. El syllabus dice que ese número es el indicador que más pesa en la evaluación del módulo: se compara entre <strong>la primera sesión de cada uno y la última</strong>, y tiene que bajar. Para que el número signifique algo, todos tenemos que contar lo mismo.</p>
+
+  <h3>¿Por qué tanto lío con ayudar "un poquito"?</h3>
+  <p>Hay un estudio que lo midió. Erica Olmsted-Hawala y su equipo, en la Oficina del Censo de Estados Unidos, publicaron en 2010 (en CHI, la conferencia principal del área) un experimento: el <strong>mismo sitio web</strong> probado con tres formas de conducir.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Forma de conducir</th><th>Qué pasó</th></tr></thead>
+    <tbody>
+      <tr><td>Clásica, casi en silencio</td><td>Punto de comparación</td></tr>
+      <tr><td>Con "ajás" de escucha (Boren y Ramey)</td><td>Sin diferencia significativa con la clásica</td></tr>
+      <tr><td><strong>Guiando un poco</strong> cuando la persona se atascaba</td><td><strong>Más tareas logradas</strong> y <strong>más satisfacción con el sitio</strong></td></tr>
+    </tbody>
+  </table></div>
+  <p>El sitio era el mismo. Lo que cambió fue quien conducía. Con ayuda, el sitio parece mejor de lo que es, y el usuario sale diciendo que le gustó. Es el desenlace del que hablamos desde la Sesión 1: el sistema que se entrega, se acepta, y después nadie usa, sin que nadie reporte una falla. <strong>La ayuda no solo borra el dato: lo cambia por uno que dice que todo está bien.</strong></p>
+
+  <h3>La definición que vamos a usar</h3>
+  <div class="box">
+    <p style="margin-top:0"><strong>Cuenta como intervención todo lo que quien conduce dice o hace, desde que termina de leer la tarea hasta que la tarea termina, que le da al usuario información sobre la interfaz, sobre el camino, o sobre si va bien o mal.</strong></p>
+  </div>
+  <p>Para anotar rápido, son seis tipos, con una letra cada uno:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Letra</th><th>Tipo</th><th>Ejemplo del tendero</th></tr></thead>
+    <tbody>
+      <tr><td class="code">R</td><td>Responder o dar pista</td><td><em>"Está en Historial."</em> · <em>"No, eso no es."</em> · <em>"Es en otra parte."</em></td></tr>
+      <tr><td class="code">N</td><td>Nombrar o señalar algo de la pantalla</td><td><em>"¿Y ese botón de arriba?"</em> · <em>"Mira la lista."</em> · señalar con el cursor o el dedo</td></tr>
+      <tr><td class="code">C</td><td>Confirmar o evaluar</td><td><em>"Eso."</em> · <em>"Muy bien."</em> · <em>"¿Seguro?"</em> · <em>"Casi."</em> · un "ajá" que solo sale cuando acierta</td></tr>
+      <tr><td class="code">P</td><td>Pregunta que dirige</td><td><em>"¿Ya miraste en Historial?"</em> · <em>"¿Qué crees que hace ese botón?"</em> (justo el que tiene que tocar)</td></tr>
+      <tr><td class="code">T</td><td>Reformular la tarea</td><td>Volver a contarla con otras palabras o con una palabra de la pantalla: <em>"O sea, hacer una devolución."</em></td></tr>
+      <tr><td class="code">G</td><td>Gesto o sonido</td><td>Suspirar, reírse, <em>"uy"</em>, <em>"mmm..."</em> cuando se equivoca. Acercarse a la pantalla.</td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>No cuenta</strong>, porque no le da información:</p>
+  <ul>
+    <li>Volver a leer la tarea <strong>con las mismas palabras</strong> si el usuario lo pide.</li>
+    <li><em>"¿Qué estás pensando?"</em>, <em>"¿qué buscas?"</em>, <em>"cuéntame"</em>.</li>
+    <li>Un "ajá" o "mm-hm" <strong>parejo</strong>.</li>
+    <li>Las tres técnicas del paso 3: eco, bumerán y columbo.</li>
+    <li>La frase de su regla de parada cuando se cumple: <em>"perfecto, pasemos a la siguiente"</em>. Ahí la tarea queda abandonada; no es intervención.</li>
+    <li>La ayuda técnica <strong>antes</strong> de leer la tarea: abrir el enlace, compartir pantalla, que se oiga.</li>
+  </ul>
+  <p>Dos reglas para quien cuenta. <strong>Uno:</strong> si duda, cuenta, y anota la frase exacta al lado; después lo discuten con la hoja. Como no hay grabación, la frase exacta es todo lo que queda: <em>"le ayudó un poco"</em> no sirve, <em>"mira arriba"</em> sí. <strong>Dos:</strong> el conteo no es una calificación de la pareja. Es un espejo.</p>
+
+  <div class="box task">
+    <h3>Ejercicio 2 · calibrar el conteo</h3>
+    <p>El usuario del tendero está en la tarea de la devolución (<em>"Doña Rosa vuelve el jueves con la gaseosa vencida y quiere su plata"</em>). Estas son ocho frases de quien conduce. Para cada una, elijan la letra o "no cuenta". <strong>Primero cada uno solo; después compárenlo con su pareja</strong> y anoten en qué número no estuvieron de acuerdo. Ese desacuerdo va en la entrega.</p>
+    <ol class="quiz" id="quiz">
+      <li><span>1. <em>"¿Qué estás pensando?"</em></span><select aria-label="Frase 1" data-q="1"></select></li>
+      <li><span>2. <em>"Tranquilo, no hay afán."</em><span class="ctx">El usuario lleva un minuto atascado en la pantalla principal.</span></span><select aria-label="Frase 2" data-q="2"></select></li>
+      <li><span>3. <em>"¿Qué esperabas que pasara cuando tocaste Vender?"</em><span class="ctx">Lo pregunta después de que el usuario tocó Vender y volvió atrás.</span></span><select aria-label="Frase 3" data-q="3"></select></li>
+      <li><span>4. <em>"Doña Rosa vuelve el jueves con la gaseosa vencida y quiere su plata."</em><span class="ctx">La relee porque el usuario pidió que se la repitieran.</span></span><select aria-label="Frase 4" data-q="4"></select></li>
+      <li><span>5. <em>"Ajá..."</em><span class="ctx">Justo cuando el usuario pone el cursor sobre Historial. Es el primer "ajá" de la sesión.</span></span><select aria-label="Frase 5" data-q="5"></select></li>
+      <li><span>6. <em>"Es que esa parte todavía no está terminada."</em><span class="ctx">El usuario tocó Cerrar día y no pasó nada.</span></span><select aria-label="Frase 6" data-q="6"></select></li>
+      <li><span>7. Usuario: <em>"¿Así?"</em> — Quien conduce: <em>"¿Tú qué crees?"</em></span><select aria-label="Frase 7" data-q="7"></select></li>
+      <li><span>8. <em>"O sea, tienes que devolverle la plata de la gaseosa."</em></span><select aria-label="Frase 8" data-q="8"></select></li>
+    </ol>
+    <div class="row"><button class="btn" id="checkQuiz" type="button">Ver respuestas</button><span id="quizScore" class="eyebrow"></span></div>
+  </div>
+  <p>Ahora vuelvan a la frase que escribieron en el ejercicio 1. ¿Contaría como intervención? ¿Qué letra?</p>
+  <label class="done-row"><input type="checkbox" data-done="paso2" id="done-paso2"> Hecho: hice el ejercicio y lo comparé con mi pareja.</label>
+</section>
+
+<section class="paso" id="paso3">
+  <span class="eyebrow">Paso 3 · individual · 15 min</span>
+  <h2>Qué decir en vez de ayudar</h2>
+  <p>Si les quitan todo lo que pueden decir, pasa una de dos cosas: se quedan mudos y el usuario siente que lo están evaluando, o se les sale la ayuda a los cuarenta segundos. Necesitan <strong>frases de reemplazo</strong> preparadas para el momento en que aparece el impulso.</p>
+  <p>Nielsen Norman Group enseña tres técnicas para hablar con el usuario sin sesgarlo. Tienen nombres raros a propósito, para que se recuerden:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Técnica</th><th>Cuándo</th><th>Qué se dice</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Eco</strong></td><td>El usuario dice algo y se queda ahí</td><td><em>"Esto de Historial es raro..."</em> → <em>"¿Raro?"</em><br>Se repiten <strong>sus</strong> palabras, con tono de pregunta. Nunca las de ustedes ni las de la pantalla.</td></tr>
+      <tr><td><strong>Bumerán</strong></td><td>Pregunta cómo se hace</td><td><em>"¿Esto se hace en Ventas?"</em> → <em>"¿Tú qué crees?"</em> o <em>"¿Qué harías si yo no estuviera aquí?"</em><br>La segunda es de Steve Krug, y es la mejor para el momento de máximo atasco.</td></tr>
+      <tr><td><strong>Columbo</strong></td><td>Después de que hizo algo</td><td><em>"Y cuando tocaste ahí..."</em> y se callan.<br>Por el detective de la serie, que se hacía el despistado para que el otro hablara. El usuario completa la frase con lo que <strong>él</strong> pensó.</td></tr>
+      <tr><td><strong>Pregunta abierta</strong></td><td>Después, nunca antes</td><td><em>"¿Qué esperabas que pasara?"</em> · <em>"¿Qué buscabas en esa pantalla?"</em><br>Es lo que el syllabus pide: preguntar por lo que el usuario esperaba encontrar, sin decir si estuvo bien o mal.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>El momento más difícil: "¿así?"</h3>
+  <p>El momento donde más gente interviene no es cuando el usuario está perdido. Es cuando <strong>termina mal</strong> y pregunta <em>"¿así? ¿quedó?"</em>. Por ejemplo, devolvió la compra completa en vez de solo la gaseosa, y los mira esperando aprobación.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Si dicen...</th><th>La tarea queda</th><th>Lo que se pierde</th></tr></thead>
+    <tbody>
+      <tr><td><em>"Casi, solo era la gaseosa."</em></td><td>Lograda con ayuda</td><td>Que la devolución parcial no se entiende</td></tr>
+      <tr><td><em>"¿Tú qué crees? ¿Quedó como querías?"</em> → <em>"Sí."</em> → <em>"Perfecto, sigamos."</em></td><td><strong>Fallida</strong></td><td>Nada. Es el dato más valioso de la sesión: un usuario que falla sin saberlo.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>El silencio</h3>
+  <p>El silencio de un usuario atascado se siente mucho más largo de lo que es: veinte segundos se sienten como dos minutos. Dos trucos de gente del oficio: <strong>cuenten hasta diez en la cabeza</strong> antes de decir cualquier cosa (casi siempre el usuario habla antes), y <strong>miren sus notas</strong> en vez de mirarlo a él: si siente que lo miran mientras se atasca, se pone más nervioso. Y si se cumple su regla de parada, la aplican. No es una derrota, es un dato.</p>
+
+  <h3>Al terminar las tareas, sí se ayuda</h3>
+  <p>Cuando terminan las tareas, pueden responder todo lo que el usuario preguntó y hacerle preguntas abiertas: <em>"¿qué fue lo más confuso?"</em>. Lo que diga ahí es <strong>opinión</strong>, no desempeño: se anota aparte.</p>
+  <p>Después viene lo que el syllabus llama <strong>registro inmediato</strong>. Apenas se va el usuario, cada uno escribe por su lado, antes de hablar entre ustedes. Sin grabación, esas notas son la única evidencia de la sesión.</p>
+
+  <div class="box task">
+    <h3>Ejercicio 3 · su frase de reemplazo</h3>
+    <p>Piensen en la intervención que <strong>a ustedes</strong> más se les va a salir. Escojan la frase de reemplazo que van a tener escrita en un papel al lado del computador durante la sesión real. Una por persona. Va en la entrega.</p>
+  </div>
+  <label class="done-row"><input type="checkbox" data-done="paso3" id="done-paso3"> Hecho: tengo mi frase de reemplazo.</label>
+</section>
+
+<section class="paso" id="paso4">
+  <span class="eyebrow">Paso 4 · individual · 15 min</span>
+  <h2>La misma tarea, conducida dos veces</h2>
+  <p>Dos transcripciones de la tarea de la devolución del tendero. <strong>El usuario hace exactamente lo mismo en las dos</strong>: toca primero Vender, pregunta si es en Ventas, y al final devuelve la compra completa. Lo único que cambia es quien conduce. Cuenten las intervenciones de cada ronda, con letra, antes de ver la solución.</p>
+
+  <h3>Ronda 1</h3>
+  <div class="script">
+    <p data-n="1" class="c"><b>Conduce:</b> Doña Rosa vuelve el jueves con la gaseosa vencida y quiere su plata.</p>
+    <p data-n="2" class="act">El usuario toca Vender.</p>
+    <p data-n="3" class="c"><b>Conduce:</b> Mmm... ¿segura?</p>
+    <p data-n="4" class="act">El usuario vuelve atrás y se queda quieto 15 segundos.</p>
+    <p data-n="5" class="c"><b>Conduce:</b> Tranqui, mira bien los botones.</p>
+    <p data-n="6" class="u"><b>Usuario:</b> ¿Esto se hace en Ventas?</p>
+    <p data-n="7" class="c"><b>Conduce:</b> No, es en otra parte.</p>
+    <p data-n="8" class="act">El usuario pasa el cursor sobre Historial.</p>
+    <p data-n="9" class="c"><b>Conduce:</b> Ajá...</p>
+    <p data-n="10" class="act">Entra a Historial y ve la lista de ventas.</p>
+    <p data-n="11" class="c"><b>Conduce:</b> La del jueves, ¿no?</p>
+    <p data-n="12" class="act">Abre la venta del jueves y devuelve todos los productos.</p>
+    <p data-n="13" class="u"><b>Usuario:</b> ¿Así?</p>
+    <p data-n="14" class="c"><b>Conduce:</b> Casi, solo era la gaseosa.</p>
+    <p data-n="15" class="act">Corrige y devuelve solo la gaseosa.</p>
+  </div>
+  <div class="row"><label for="r1" class="eyebrow">Mis intervenciones en la ronda 1</label><input id="r1" class="num" type="number" min="0" inputmode="numeric"></div>
+
+  <h3>Ronda 2</h3>
+  <div class="script">
+    <p data-n="1" class="c"><b>Conduce:</b> Doña Rosa vuelve el jueves con la gaseosa vencida y quiere su plata.</p>
+    <p data-n="2" class="act">El usuario toca Vender y se queda pensando. Quien conduce mira sus notas y cuenta hasta diez.</p>
+    <p data-n="3" class="c"><b>Conduce:</b> ¿Qué estás pensando?</p>
+    <p data-n="4" class="u"><b>Usuario:</b> Que esto es raro... ¿Esto se hace en Ventas?</p>
+    <p data-n="5" class="c"><b>Conduce:</b> ¿Qué harías si yo no estuviera aquí?</p>
+    <p data-n="6" class="act">El usuario vuelve atrás, prueba Historial, encuentra la venta del jueves y devuelve todos los productos.</p>
+    <p data-n="7" class="u"><b>Usuario:</b> ¿Así?</p>
+    <p data-n="8" class="c"><b>Conduce:</b> ¿Tú qué crees? ¿Quedó como querías?</p>
+    <p data-n="9" class="u"><b>Usuario:</b> Sí, creo que sí.</p>
+    <p data-n="10" class="c"><b>Conduce:</b> Perfecto, sigamos.</p>
+    <p data-n="11" class="act">Al final de la sesión, ya fuera de las tareas:</p>
+    <p data-n="12" class="c"><b>Conduce:</b> Cuando tocaste Vender al principio, ¿qué esperabas encontrar?</p>
+    <p data-n="13" class="u"><b>Usuario:</b> Pues pensé que devolver era como vender al revés.</p>
+  </div>
+  <div class="row"><label for="r2" class="eyebrow">Mis intervenciones en la ronda 2</label><input id="r2" class="num" type="number" min="0" inputmode="numeric"></div>
+
+  <details>
+    <summary>Ver solución (después de contar)</summary>
+    <div class="inner">
+      <p><strong>Ronda 1: seis intervenciones.</strong> Línea 3 <strong>C</strong> ("¿segura?") · línea 5 <strong>N</strong> ("mira bien los botones") · línea 7 <strong>R</strong> ("es en otra parte") · línea 9 <strong>C</strong> (el "ajá" que solo sale sobre Historial) · línea 11 <strong>P</strong> ("la del jueves, ¿no?") · línea 14 <strong>R</strong> ("solo era la gaseosa").</p>
+      <p><strong>Ronda 2: cero.</strong> Línea 3 es el recordatorio neutro, línea 5 es bumerán, línea 8 es bumerán, línea 10 es la frase para pasar a la siguiente. La línea 12 ya es el cierre, fuera de la tarea.</p>
+      <p><strong>Comparen el resultado.</strong> En la ronda 1 la tarea quedó <strong>lograda</strong> y, si le preguntaran, el usuario diría que fue fácil. En la ronda 2 quedó <strong>fallida</strong>: devolvió de más y creyó que había terminado. La ronda 2 es la que sirve. Dice que la devolución parcial no se entiende, y la línea 13 dice por qué: el usuario piensa en devolver como "vender al revés". Ese dato no existe en la ronda 1.</p>
+      <p>Una cosa más: la ronda 2 <strong>se siente peor</strong>, para el usuario y para quien conduce. Es normal. La apertura y la regla de parada existen para que esa incomodidad sea segura para el usuario. Lo que no pueden hacer es quitársela ayudándolo, porque con ella se va el dato. Es el estudio de Olmsted-Hawala en pequeño.</p>
+    </div>
+  </details>
+  <label class="done-row"><input type="checkbox" data-done="paso4" id="done-paso4"> Hecho: conté las dos rondas y vi la solución.</label>
+</section>
+
+<section class="paso" id="paso5">
+  <span class="eyebrow">Paso 5 · en pareja, en vivo · 50 min</span>
+  <h2>Ensayo en pareja: su primer número</h2>
+  <p>Hasta aquí todo fue leer. Ahora cada uno conduce <strong>una tarea de su propio plan, sobre su propio prototipo</strong>, frente a alguien que hace de usuario con una tarjeta de personaje. Es un <strong>ensayo de la conducción</strong>, no una validación: nada de lo que pase aquí cuenta como hallazgo del diseño.</p>
+
+  <h3>Quién hace qué</h3>
+  <ul>
+    <li><strong>Lo ideal (tres personas):</strong> alguien de la casa o un amigo hace de usuario, siguiendo una tarjeta. Uno de ustedes conduce y el otro cuenta con la hoja del observador. Después cambian.</li>
+    <li><strong>Si son solo ustedes dos:</strong> quien no conduce hace de usuario siguiendo la tarjeta. Al terminar la tarea, antes de hablar, escribe lo que quien conduce le dijo, con la frase lo más exacta posible: desde el lado del usuario las intervenciones se notan mucho.</li>
+  </ul>
+  <p>Las tarjetas están en los <a href="#tarjetas">anexos</a>. <strong>Solo las lee quien hace de usuario.</strong> Quien conduce no sabe qué personaje le toca. Usen tarjetas distintas para cada uno, y que al menos uno de los dos tenga la tarjeta 3.</p>
+
+  <h3>El orden, para cada uno</h3>
+  <ol>
+    <li><strong>Apertura</strong> (1 min): quien conduce lee su apertura, con la parte 6 nueva.</li>
+    <li><strong>Tarea</strong> (3-4 min): lee una de sus tres tareas tal cual está escrita. El usuario actúa la tarjeta. Quien cuenta anota cada intervención con minuto, qué hacía el usuario justo antes, letra y frase exacta.</li>
+    <li><strong>¿Cuántas crees?</strong> Antes de ver la hoja, quien condujo escribe cuántas veces cree que intervino. <strong>Este orden no se cambia.</strong> La diferencia entre lo que creía y lo que fue es lo que el ensayo enseña.</li>
+    <li><strong>El número real:</strong> quien contó lee el número y las frases.</li>
+    <li><strong>Volver a jugar una:</strong> escojan una intervención. El usuario repite lo que hizo en ese momento, y quien condujo prueba una frase de reemplazo del paso 3.</li>
+  </ol>
+
+  <h3>Errores comunes</h3>
+  <ul>
+    <li><strong>Reformular la tarea al leerla.</strong> Se lee tal cual. Si el usuario no la entiende, se lee otra vez, igual.</li>
+    <li><strong>Quedarse mudo del todo.</strong> El silencio no es no hablar nunca, es no dar información. "¿Qué estás pensando?" y un "ajá" parejo están permitidos.</li>
+    <li><strong>Corregir el "¿así?".</strong> La tarea pasa de fallida a lograda con ayuda y se pierde el mejor dato.</li>
+    <li><strong>Consolar con pistas</strong> ("no, si es facilito, solo es..."). Se consuela con la apertura: el que falla es el diseño, no la persona.</li>
+    <li><strong>Prometer la idea del usuario</strong> ("sí, buena idea, lo agregamos"). No se promete ni se discute: <em>"¿qué te hizo pensar en eso?"</em>, y se anota como algo que <strong>dijo</strong>.</li>
+  </ul>
+  <label class="done-row"><input type="checkbox" data-done="paso5" id="done-paso5"> Hecho: los dos condujimos, contamos y anotamos "creía / real".</label>
+</section>
+
+<section class="paso" id="paso6">
+  <span class="eyebrow">Paso 6 · en pareja · esta semana, después del taller</span>
+  <h2>Su primera sesión real</h2>
+  <p>Conduce quien decidieron en el paso 0. El otro observa y cuenta.</p>
+  <ol>
+    <li><strong>Antes</strong> (el día anterior): repasen el plan. Las predicciones de cada tarea tienen que estar escritas antes de la sesión y no se cambian después. En un papel, a la vista: su frase de reemplazo, la regla de parada y el tiempo límite de cada tarea.</li>
+    <li><strong>Al empezar:</strong> la apertura leída tal cual, con la parte 6 nueva (no se graba, las notas se comentan en clase sin su nombre).</li>
+    <li><strong>Durante:</strong> quien conduce lee cada tarea tal cual está escrita. Quien observa marca el resultado con los criterios del plan, anota el tiempo y dónde se detuvo, y por cada intervención escribe <strong>minuto, qué hacía el usuario justo antes, letra y frase exacta</strong>. Quien observa no habla: si habla, sus intervenciones también cuentan.</li>
+    <li><strong>Al final:</strong> ahora sí se responde todo y se hacen las preguntas abiertas. Lo que diga va como opinión, aparte.</li>
+    <li><strong>Inmediatamente después, cada uno por su lado:</strong> quien condujo escribe cuántas veces cree que intervino y cuáles recuerda, <strong>antes</strong> de ver la hoja de su pareja. Quien observó completa su hoja mientras la tiene fresca.</li>
+    <li><strong>Después, juntos:</strong> comparan, y quien condujo llena el <strong>análisis de la propia actuación</strong> sobre la hoja de su pareja: cada intervención, qué dijo, y qué dato perdió. Las intervenciones que su pareja contó y que él no recordaba son las más importantes.</li>
+  </ol>
+  <p>El sábado 10 de octubre, en clase, cada pareja trae <strong>una intervención</strong> de su sesión real, la que más les costó. La vamos a <strong>reconstruir</strong>: ustedes cuentan qué hacía el usuario, yo hago de ese usuario, y quien condujo lo vuelve a vivir, primero con lo que dijo y después con una frase de reemplazo. Del usuario no se dice el nombre.</p>
+  <p>Y confirmen la <strong>segunda sesión real</strong>, entre el 10 y el 17 de octubre, en la que <strong>conduce el otro miembro de la pareja</strong>. El número de intervenciones se mide por persona, así que cada uno tiene que conducir.</p>
+  <label class="done-row"><input type="checkbox" data-done="paso6" id="done-paso6"> Hecho: hicimos la sesión real y llenamos las hojas.</label>
+</section>
+
+<section class="paso" id="entrega">
+  <span class="eyebrow">Entrega · una por pareja · antes del sábado 10 de octubre</span>
+  <h2>Qué entregar</h2>
+  <p>Copien esta plantilla, llénenla y envíenla por el canal de siempre del curso. Las partes A a D salen del taller y conviene enviarlas <strong>antes</strong> de la sesión real; la parte E, después de hacerla.</p>
+  <div class="sheet"><button class="btn ghost copy" type="button" data-copy="tplEntrega">Copiar</button><pre id="tplEntrega">ENTREGA — TALLER 4 · CONDUCIR SIN AYUDAR
+Pareja: ______________ y ______________
+
+A. CALIBRACIÓN (paso 2)
+   Frases en las que no estuvimos de acuerdo: #___  #___
+   Cómo lo resolvimos: ___________________________________
+
+B. ENSAYO EN PAREJA (paso 5)
+   Integrante 1 · tarjeta n.° ___ · creía: ___ · real: ___ · letras: ________
+   Integrante 2 · tarjeta n.° ___ · creía: ___ · real: ___ · letras: ________
+   ¿Quién aguantó el "¿así?"?: ___________________________
+   La intervención que volvimos a jugar y la frase de reemplazo que probamos:
+   ______________________________________________________
+
+C. FRASES DE REEMPLAZO (paso 3)
+   Integrante 1: ________________________________________
+   Integrante 2: ________________________________________
+
+D. APERTURA Y LOGÍSTICA
+   Parte 6 de la apertura, reescrita sin grabación: ____________
+   Sesión real 1 · fecha: ______ · conduce: ________ · observa: ________
+   Sesión real 2 (10-17 oct) · fecha: ______ · conduce: ________
+
+E. PRIMERA SESIÓN REAL (después de hacerla)
+   Hoja de quien observó (las tres tareas)
+   Análisis de la propia actuación de quien condujo
+   Intervención que traemos para reconstruir el sábado: #___</pre></div>
+  <label class="done-row"><input type="checkbox" data-done="entrega" id="done-entrega"> Hecho: enviamos la entrega.</label>
+</section>
+
+<hr>
+
+<section id="hojas">
+  <span class="eyebrow">Anexos</span>
+  <h2>Hojas y tarjetas</h2>
+  <p>Cópienlas a un documento o imprímanlas. Las tres hojas se usan en el ensayo y en la sesión real.</p>
+
+  <h3>Hoja de quien conduce</h3>
+  <p>Para tener a la vista durante la sesión.</p>
+  <div class="sheet"><button class="btn ghost copy" type="button" data-copy="hConduce">Copiar</button><pre id="hConduce">HOJA DE QUIEN CONDUCE
+
+ANTES DE LA TAREA
+  [ ] Apertura leída tal cual   [ ] Permiso dicho (no se graba; notas sin su nombre)
+
+DURANTE LA TAREA — lo que SÍ puedo decir
+  Silencio largo   → (cuento hasta 10) "¿Qué estás pensando?" / "¿Qué buscas?"
+  "¿Cómo se hace?" → "¿Qué harías si yo no estuviera aquí?"     (bumerán)
+  "Esto es raro"   → "¿Raro?"            (eco: SUS palabras, no las de la pantalla)
+  Después de algo  → "Y cuando tocaste ahí..."   (columbo, y me callo)
+                   → "¿Qué esperabas que pasara?"
+  "¿Así? ¿Quedó?"  → "¿Tú qué crees? ¿Quedó como querías?"
+  "No sirvo pa' esto" → "Estamos probando el diseño, no a ti.
+                         Esto es justo lo que necesitamos ver."
+  "¿Me repites?"   → leo la tarea OTRA VEZ, CON LAS MISMAS PALABRAS
+  "Ajá" / "mm-hm"  → parejo: igual cuando acierta y cuando falla
+
+REGLA DE PARADA (la nuestra): ______________________________
+  → "Perfecto, pasemos a la siguiente."  (abandonada; no es intervención)
+
+MI FRASE DE REEMPLAZO: ____________________________________
+
+AL TERMINAR LAS TAREAS — aquí SÍ ayudo
+  Respondo todo · "¿Qué fue lo más confuso?" · (lo que diga = OPINIÓN, aparte)</pre></div>
+
+  <h3>Hoja de quien observa</h3>
+  <p>Una por tarea. Sin grabación, esta hoja es el registro de la sesión.</p>
+  <div class="sheet"><button class="btn ghost copy" type="button" data-copy="hObserva">Copiar</button><pre id="hObserva">HOJA DE QUIEN OBSERVA — Sesión: ___  Fecha: _______  Usuario: (sin nombre) ___
+Conduce: _______________   Observa y cuenta: _______________
+
+TAREA __: "__________________________________________"
+Predicción escrita ANTES (de nuestro plan): ___________________________
+
+Resultado (con el criterio del plan):
+  [ ] Lograda  [ ] Lograda con ayuda  [ ] Fallida  [ ] Abandonada
+  Tiempo real: ___ min  (previsto ___ / límite ___)
+  Dónde se detuvo (pantalla y qué hizo): __________________________
+
+INTERVENCIONES DE QUIEN CONDUCE
+(desde que termina de leer la tarea hasta que la tarea termina)
+  R responder/pista   N nombrar/señalar   C confirmar/evaluar
+  P pregunta que dirige   T reformular la tarea   G gesto o sonido
+  En duda: SE CUENTA y se anota la frase. La frase exacta, no un resumen.
+
+  # | Min | Qué hacía el usuario justo antes | Letra | Frase exacta (o gesto)
+  1 | ___ | ______________________________ |  ___  | ______________________
+  2 | ___ | ______________________________ |  ___  | ______________________
+  3 | ___ | ______________________________ |  ___  | ______________________
+  TOTAL de la tarea: ___
+
+HIZO (lo que vi)                       | DIJO (lo que dijo)
+______________________________________ | _______________________________
+______________________________________ | _______________________________</pre></div>
+
+  <h3>Análisis de la propia actuación</h3>
+  <p>Lo llena quien condujo, después de la sesión, sobre la hoja de su pareja.</p>
+  <div class="sheet"><button class="btn ghost copy" type="button" data-copy="hAnalisis">Copiar</button><pre id="hAnalisis">ANÁLISIS DE MI ACTUACIÓN — Sesión ___   Conduje: _______________
+
+Justo al terminar, ANTES de ver la hoja de mi pareja:
+  Creo que intervine ___ veces.
+  Las que recuerdo: _____________________________________________
+Mi pareja contó: ___ .   De esas, no recordaba: ___ .
+
+Por cada intervención:
+  # | Qué hacía el usuario | Lo que dije o hice | Letra | ¿Qué dato perdí?
+    |                      |                    |       | (qué iba a revelar si me callaba)
+  1 |                      |                    |       |
+  2 |                      |                    |       |
+
+La intervención que más me costó evitar, y por qué: ___________________
+Frase de reemplazo para la próxima vez: _______________________________
+Intervención para reconstruir en clase: # ___</pre></div>
+
+  <h3 id="tarjetas">Tarjetas de usuario para el ensayo</h3>
+  <details>
+    <summary>Abrir solo si te toca hacer de usuario</summary>
+    <div class="inner">
+      <p>Actúa con naturalidad, sin exagerar. Si haces una caricatura, quien conduce se ríe, se relaja, y el impulso de ayudar no aparece. Funcionan con cualquier prototipo.</p>
+      <div class="cards">
+        <div class="card"><h4>1 · El callado</h4>No dices nada en voz alta aunque te lo pidan. Te quedas mirando la primera pantalla 20-30 segundos. Si te preguntan qué piensas, dices una frase corta y vuelves a callar. Terminas la tarea, lento.<div class="why">Provoca: romper el silencio con una pista.</div></div>
+        <div class="card"><h4>2 · El preguntón</h4>A cada paso preguntas: "¿esto dónde está?", "¿le doy aquí?", "¿esto es lo que me pidieron?". Si te responden, sigues lo que te dijeron, y tu siguiente pregunta es todavía más fácil.<div class="why">Provoca: responder.</div></div>
+        <div class="card"><h4>3 · El que dice "¿así?"</h4>Haces la tarea con seguridad y la terminas <strong>mal</strong>: haces algo parecido a lo que te pidieron, pero no exactamente eso. Al final miras a quien conduce y dices "¿así? ¿quedó bien?", y esperas.<div class="why">Provoca: corregir. Es la tarjeta más importante.</div></div>
+        <div class="card"><h4>4 · El que se frustra</h4>Después de un minuto atascado te empiezas a culpar: "uy, yo no sirvo para estas cosas", "es que yo soy malo con el celular". Suspiras.<div class="why">Provoca: consolar con pistas.</div></div>
+        <div class="card"><h4>5 · El que propone</h4>Haces la tarea más o menos bien, pero a la mitad dices "deberían poner un botón grande para esto en la primera pantalla" y preguntas "¿lo van a poner?".<div class="why">Provoca: discutir, defender el diseño o prometer.</div></div>
+      </div>
+    </div>
+  </details>
+
+  <h3>Referencias</h3>
+  <ul class="refs">
+    <li>Ericsson, K. A. y Simon, H. A. (1993). <em>Protocol Analysis: Verbal Reports as Data</em> (ed. rev.). MIT Press.</li>
+    <li>Nielsen, J. (2012). "Thinking Aloud: The #1 Usability Tool". Nielsen Norman Group.</li>
+    <li>Boren, T. y Ramey, J. (2000). "Thinking aloud: Reconciling theory and practice". <em>IEEE Transactions on Professional Communication</em>, 43(3), 261-278.</li>
+    <li>Olmsted-Hawala, E. L., Murphy, E. D., Hawala, S. y Ashenfelter, K. T. (2010). "Think-aloud protocols: A comparison of three think-aloud protocols for use in testing data-dissemination web sites for usability". <em>Proceedings of CHI 2010</em>, ACM.</li>
+    <li>Nielsen Norman Group. "Talking with Participants During a Usability Test" (técnicas Echo, Boomerang y Columbo). <a href="https://www.nngroup.com/articles/talking-to-users/">nngroup.com/articles/talking-to-users</a></li>
+    <li>Krug, S. (2010). <em>Rocket Surgery Made Easy</em>. New Riders.</li>
+  </ul>
+</section>
+</main>
+</div>
+
+<script>
+(function(){
+  var KEY='taller4-done';
+  var done={};
+  try{done=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){done={}}
+  function paint(){
+    document.querySelectorAll('#toc a[data-step]').forEach(function(a){
+      a.classList.toggle('done',!!done[a.getAttribute('data-step')]);
+    });
+  }
+  document.querySelectorAll('input[data-done]').forEach(function(cb){
+    var k=cb.getAttribute('data-done');
+    cb.checked=!!done[k];
+    cb.addEventListener('change',function(){
+      done[k]=cb.checked;
+      try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}
+      paint();
+    });
+  });
+  paint();
+
+  // ejercicio 2
+  var opts=['—','No cuenta','R','N','C','P','T','G'];
+  var key={
+    1:{ok:['No cuenta'],t:'<strong>No cuenta.</strong> Es el recordatorio neutro.'},
+    2:{ok:['G','C','No cuenta'],t:'<strong>Discutible, y es la mejor de la lista.</strong> Suena amable y no menciona la pantalla, pero dicha en pleno atasco le dice "vas lento" o "no estás encontrando algo". Dicha en la apertura no cuenta; dicha en el atasco, la mayoría la contaría como G o C. Lo importante: anotarla con la frase al lado.'},
+    3:{ok:['No cuenta'],t:'<strong>No cuenta</strong>, siempre que se pregunte después de que pasó y sin decir si estuvo bien. Es la pregunta abierta que pide el syllabus. Menciona "Vender" porque lo tocó el usuario, no porque se lo sugieran.'},
+    4:{ok:['No cuenta'],t:'<strong>No cuenta:</strong> misma tarea, mismas palabras.'},
+    5:{ok:['C'],t:'<strong>C.</strong> Es el "ajá" que solo salió cuando iba bien. El problema no es el sonido: es que no es parejo.'},
+    6:{ok:['No cuenta','R'],t:'<strong>Depende.</strong> Si Cerrar día no está en ninguna tarea, quien conduce solo repite lo que dijo la apertura ("hay botones que no llevan a ningún lado"), y no da información sobre el camino. Pero si el usuario estaba probando si la devolución estaba ahí, le acaba de decir "por ahí no es": eso es R. Lo más seguro es callar; si pregunta "¿se dañó?", basta con "es un prototipo, hay cosas que no responden".'},
+    7:{ok:['No cuenta'],t:'<strong>No cuenta:</strong> es un bumerán (paso 3).'},
+    8:{ok:['T'],t:'<strong>T</strong>, y de las más dañinas: traduce el escenario a la acción, con una palabra que podría estar en la pantalla. La tarea dejó de ser un escenario.'}
+  };
+  document.querySelectorAll('#quiz select').forEach(function(s){
+    opts.forEach(function(o){var op=document.createElement('option');op.textContent=o;op.value=o==='—'?'':o;s.appendChild(op)});
+    s.id='q'+s.getAttribute('data-q');
+  });
+  document.getElementById('checkQuiz').addEventListener('click',function(){
+    var hits=0;
+    document.querySelectorAll('#quiz li').forEach(function(li){
+      var s=li.querySelector('select'),q=s.getAttribute('data-q'),k=key[q];
+      var a=li.querySelector('.ans');
+      if(!a){a=document.createElement('div');a.className='ans';li.appendChild(a)}
+      var good=k.ok.indexOf(s.value)>-1;
+      if(good)hits++;
+      a.innerHTML=(s.value?(good?'<span style="color:var(--ok)">✓ </span>':'<span style="color:var(--warn)">✗ </span>'):'')+k.t;
+    });
+    document.getElementById('quizScore').textContent=hits+' de 8 coinciden con la clave';
+  });
+
+  // copiar
+  document.querySelectorAll('[data-copy]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var el=document.getElementById(b.getAttribute('data-copy'));
+      var txt=el.textContent;
+      function sel(){var r=document.createRange();r.selectNodeContents(el);var s=window.getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Seleccionado: Ctrl+C'}
+      try{
+        navigator.clipboard.writeText(txt).then(function(){b.textContent='Copiado';setTimeout(function(){b.textContent='Copiar'},1800)},sel);
+      }catch(e){sel()}
+    });
+  });
+})();
+</script>
+</body>
+</html>
